@@ -1,7 +1,6 @@
 package com.example.diagassistant.ui.components
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -19,22 +18,22 @@ import androidx.compose.ui.unit.dp
 import com.example.diagassistant.ui.theme.DiagPalette
 
 enum class NavItem(val icon: androidx.compose.ui.graphics.vector.ImageVector) {
-    HOME(Icons.Outlined.Description),
-    LIVE(Icons.Outlined.Speed),
-    ALERT(Icons.Outlined.NotificationsNone),
+    DASHBOARD(Icons.Outlined.Speed),
+    DTC(Icons.Outlined.NotificationsNone),
+    REPORT(Icons.Outlined.Description),
     ASSIST(Icons.Outlined.ChatBubbleOutline),
 }
 
 @Composable
-fun SimpleBottomNavBar(
-    selectedIndex: Int,
-    onSelect: (Int) -> Unit,
+fun BottomNavBar(
+    selected: NavItem,
+    onSelect: (NavItem) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Surface(
         modifier = modifier
-            .fillMaxWidth(0.56f)   // slightly shorter
-            .height(96.dp),        // thick bar
+            .fillMaxWidth(0.56f)
+            .height(96.dp),
         shape = RoundedCornerShape(30.dp),
         color = DiagPalette.Surface2,
         tonalElevation = 0.dp,
@@ -47,17 +46,16 @@ fun SimpleBottomNavBar(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            NavItem.values().forEachIndexed { index, item ->
-                val isSelected = index == selectedIndex
+            NavItem.values().forEach { item ->
+                val isSelected = item == selected
 
                 val tileColor = if (isSelected) DiagPalette.SidebarSelected else Color.Transparent
                 val border = if (isSelected) BorderStroke(1.5.dp, DiagPalette.AccentBlue) else null
                 val iconTint = if (isSelected) DiagPalette.AccentBlue else DiagPalette.TextSecondary
 
                 Surface(
-                    modifier = Modifier
-                        .size(width = 72.dp, height = 68.dp)
-                        .noIndicationClickable { onSelect(index) },
+                    modifier = Modifier.size(width = 72.dp, height = 68.dp)
+                        .noIndicationClickable { onSelect(item) },
                     shape = RoundedCornerShape(18.dp),
                     color = tileColor,
                     border = border
