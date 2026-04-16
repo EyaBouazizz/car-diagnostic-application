@@ -23,16 +23,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.diagassistant.ui.theme.DiagPalette
+import androidx.compose.material.icons.outlined.LocalGasStation
+import androidx.compose.material.icons.outlined.TireRepair
+import androidx.compose.material.icons.outlined.OilBarrel
 
 // Keep the simple labels like your first sidebar version
 enum class GaugeItem(val label: String, val icon: ImageVector) {
     RPM("RPM", Icons.Outlined.Speed),
     TEMP("TEMP", Icons.Outlined.Thermostat),
     COOLANT("COOLANT", Icons.Outlined.WaterDrop),
-    OIL("OIL", Icons.Outlined.Description),
+    OIL("OIL", Icons.Outlined.OilBarrel),
     ABS("ABS", Icons.Outlined.WaterDrop),
-    PRESSURE("PRESSURE", Icons.Outlined.Description),
-    FUEL("FUEL", Icons.Outlined.Description)
+    PRESSURE("PRESSURE", Icons.Outlined.TireRepair),
+    FUEL("FUEL", Icons.Outlined.LocalGasStation)
 }
 
 @Composable
