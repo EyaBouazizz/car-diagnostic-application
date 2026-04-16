@@ -32,8 +32,8 @@ fun LiveScreen(showBottomBar: Boolean = true) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 12.dp),
-            contentAlignment = Alignment.Center
+                .padding(start = 10.dp, end =10.dp, top = 6.dp, bottom = 1.dp),
+            contentAlignment = Alignment.TopCenter
         ) {
             GaugePanel(
                 selected = selectedGauge,

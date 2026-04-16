@@ -35,11 +35,11 @@ fun AppNavGraph() {
     Scaffold(
         containerColor = DiagPalette.Bg,
         bottomBar = {
-            // Centered bottom bar (like you wanted)
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(140.dp),
+                    .height(117.dp),
                 contentAlignment = androidx.compose.ui.Alignment.BottomCenter
             ) {
                 BottomNavBar(

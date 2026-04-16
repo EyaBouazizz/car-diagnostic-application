@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ManageSearch
 import androidx.compose.material.icons.outlined.ChatBubbleOutline
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.NotificationsNone
@@ -16,12 +17,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.diagassistant.ui.theme.DiagPalette
+import androidx.compose.material.icons.outlined.SmartToy
+import androidx.compose.material.icons.outlined.Assessment
+import androidx.compose.material.icons.outlined.BuildCircle
+import androidx.compose.material.icons.outlined.CarRepair
+import androidx.compose.material.icons.outlined.ManageSearch
 
 enum class NavItem(val icon: androidx.compose.ui.graphics.vector.ImageVector) {
     DASHBOARD(Icons.Outlined.Speed),
-    DTC(Icons.Outlined.NotificationsNone),
-    REPORT(Icons.Outlined.Description),
-    ASSIST(Icons.Outlined.ChatBubbleOutline),
+    DTC(Icons.AutoMirrored.Outlined.ManageSearch),
+    REPORT(Icons.Outlined.Assessment),
+    ASSIST(Icons.Outlined.SmartToy),
 }
 
 @Composable
