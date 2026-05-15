@@ -5,9 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ManageSearch
-import androidx.compose.material.icons.outlined.ChatBubbleOutline
-import androidx.compose.material.icons.outlined.Description
-import androidx.compose.material.icons.outlined.NotificationsNone
 import androidx.compose.material.icons.outlined.Speed
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -19,9 +16,6 @@ import androidx.compose.ui.unit.dp
 import com.example.diagassistant.ui.theme.DiagPalette
 import androidx.compose.material.icons.outlined.SmartToy
 import androidx.compose.material.icons.outlined.Assessment
-import androidx.compose.material.icons.outlined.BuildCircle
-import androidx.compose.material.icons.outlined.CarRepair
-import androidx.compose.material.icons.outlined.ManageSearch
 
 enum class NavItem(val icon: androidx.compose.ui.graphics.vector.ImageVector) {
     DASHBOARD(Icons.Outlined.Speed),
