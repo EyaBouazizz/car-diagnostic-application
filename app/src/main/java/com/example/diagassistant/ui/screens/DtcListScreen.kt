@@ -14,6 +14,7 @@ import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.WarningAmber
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,19 +34,27 @@ import kotlinx.coroutines.launch
 fun DtcListScreen() {
     val scope = rememberCoroutineScope()
 
-    var scanning by remember { mutableStateOf(false) }
-    var hasScanRun by remember { mutableStateOf(false) }
-    var lastScanText by remember { mutableStateOf("Never") }
-    var dtcs by remember { mutableStateOf<List<DtcCode>>(emptyList()) }
-
-    var selectedDtc by remember { mutableStateOf<DtcCode?>(null) }
+    // Saveable UI state
+    var scanning by rememberSaveable { mutableStateOf(false) }
+    var hasScanRun by rememberSaveable { mutableStateOf(false) }
+    var lastScanText by rememberSaveable { mutableStateOf("Never") }
+    var dtcCodes by rememberSaveable { mutableStateOf<List<String>>(emptyList()) }
+    var selectedDtcCode by rememberSaveable { mutableStateOf<String?>(null) }
+    val dtcs: List<DtcCode> = remember(dtcCodes) {
+        dtcCodes.mapNotNull { code -> FakeDtcRepository.getByCode(code) }
+            .sortedByDescending { severityRank(it.severity) }
+    }
 
     fun runScan() {
         scanning = true
         hasScanRun = true
         scope.launch {
-            dtcs = FakeDtcRepository.runScan()
+            val results = FakeDtcRepository.runScan()
                 .sortedByDescending { severityRank(it.severity) }
+
+            // Persistable representation
+            dtcCodes = results.map { it.code }
+
             scanning = false
             lastScanText = "Just now"
         }
@@ -140,7 +149,7 @@ fun DtcListScreen() {
                         items(dtcs) { dtc ->
                             DtcCard(
                                 dtc = dtc,
-                                onViewDetails = { selectedDtc = dtc }
+                                onViewDetails = { selectedDtcCode = dtc.code }
                             )
                         }
                     }
@@ -149,10 +158,11 @@ fun DtcListScreen() {
         }
     }
 
+    val selectedDtc = dtcs.firstOrNull { it.code == selectedDtcCode }
     if (selectedDtc != null) {
         BigDtcDetailsDialog(
-            dtc = selectedDtc!!,
-            onDismiss = { selectedDtc = null }
+            dtc = selectedDtc,
+            onDismiss = { selectedDtcCode = null }
         )
     }
 }
@@ -261,7 +271,7 @@ private fun DtcCard(
                 modifier = Modifier.padding(18.dp),
                 verticalAlignment = Alignment.Top
             ) {
-                // code badge (bigger)
+                // code badge
                 Surface(
                     shape = RoundedCornerShape(16.dp),
                     color = accent.copy(alpha = 0.12f),
@@ -359,9 +369,7 @@ private fun MetaLine(k: String, v: String, accent: Color) {
     }
 }
 
-/**
- * Big dialog with clear sections (no image, no AI section).
- */
+
 @Composable
 private fun BigDtcDetailsDialog(dtc: DtcCode, onDismiss: () -> Unit) {
     val accent = severityAccent(dtc.severity)

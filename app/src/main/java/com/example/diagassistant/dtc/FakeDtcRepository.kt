@@ -137,4 +137,7 @@ object FakeDtcRepository {
             notes = "Info severity: may be transient, but repeated events indicate a charging/battery issue."
         )
     )
+
+    fun getByCode(code: String): DtcCode? =
+        activeDtcs().firstOrNull { it.code == code }
 }

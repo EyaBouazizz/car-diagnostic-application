@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package telemetry;
+
+// Needed so Java/Kotlin classes land in a stable package:
+option java_package = "com.example.diagassistant.telemetry";
+option java_multiple_files = true;
+
+message Empty {}
+
+message RpmSample {
+  int32 rpm = 1;
+  uint32 adc_raw = 2;
+  double voltage = 3;
+  int64 ts_ms = 4;
+}
+
+service TelemetryService {
+  rpc StreamRpm(Empty) returns (stream RpmSample);
+}

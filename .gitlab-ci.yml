@@ -1,0 +1,134 @@
+stages:
+  - validate
+  - test
+  - analysis
+  - build
+default:
+  image: eclipse-temurin:17-jdk
+  before_script:
+    - export GRADLE_USER_HOME="$CI_PROJECT_DIR/.gradle"
+    - chmod +x ./gradlew
+    - ./gradlew --version
+  cache:
+    key: "gradle-${CI_COMMIT_REF_SLUG}"
+    paths:
+      - .gradle/wrapper
+      - .gradle/caches
+  variables:
+    GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx3g -Dkotlin.incremental=false"
+    ANDROID_SDK_ROOT: "$CI_PROJECT_DIR/android-sdk"
+    SAST_EXCLUDED_PATHS: "*/build/*,*/.gradle/*"
+
+# ----------------------------
+# SAST (GitLab built-in)
+# ----------------------------
+include:
+  - template: Security/SAST.gitlab-ci.yml
+
+
+sast:
+  stage: validate
+  allow_failure: true
+
+# ----------------------------
+# Basic Gradle sanity check
+# ----------------------------
+gradle:assemble_check:
+  stage: validate
+  script:
+    - ./gradlew tasks --all > /dev/null
+
+# ----------------------------
+# Unit tests (JVM tests)
+# ----------------------------
+unit_tests:
+  stage: test
+  script:
+    - ./gradlew testDebugUnitTest --stacktrace
+  artifacts:
+    when: always
+    expire_in: 7 days
+    paths:
+      - app/build/test-results/
+      - app/build/reports/tests/
+    reports:
+      junit:
+        - app/build/test-results/testDebugUnitTest/*.xml
+
+# ----------------------------
+# Static analysis
+# ----------------------------
+
+android_lint:
+  stage: analysis
+  script:
+    - ./gradlew lintDebug --stacktrace
+  artifacts:
+    when: always
+    expire_in: 7 days
+    paths:
+      - app/build/reports/lint-results-*.html
+      - app/build/reports/lint-results-*.xml
+      - app/build/reports/lint-results/
+
+detekt:
+  stage: analysis
+  script:
+    - ./gradlew detekt --stacktrace
+  allow_failure: true
+  artifacts:
+    when: always
+    expire_in: 7 days
+    paths:
+      - app/build/reports/detekt/
+      - build/reports/detekt/
+      - build/reports/detekt.*
+
+ktlint:
+  stage: analysis
+  script:
+    - ./gradlew ktlintCheck --stacktrace
+  allow_failure: true
+  artifacts:
+    when: always
+    expire_in: 7 days
+    paths:
+      - app/build/reports/ktlint/
+      - build/reports/ktlint/
+
+spotbugs:
+  stage: analysis
+  script:
+    - ./gradlew spotbugsDebug --stacktrace
+  allow_failure: true
+  artifacts:
+    when: always
+    expire_in: 7 days
+    paths:
+      - app/build/reports/spotbugs/
+      - build/reports/spotbugs/
+
+# ----------------------------
+# Build artifacts (APK)
+# ----------------------------
+build_debug_apk:
+  stage: build
+  script:
+    - ./gradlew assembleDebug --stacktrace
+  artifacts:
+    when: always
+    expire_in: 14 days
+    paths:
+      - app/build/outputs/apk/debug/*.apk
+
+build_release_apk:
+  stage: build
+  script:
+    - ./gradlew assembleRelease --stacktrace
+  when: manual
+  allow_failure: true
+  artifacts:
+    when: always
+    expire_in: 14 days
+    paths:
+      - app/build/outputs/apk/release/*.apk

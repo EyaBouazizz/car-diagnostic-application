@@ -2,8 +2,6 @@ package com.example.diagassistant.ui.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,20 +16,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.diagassistant.ui.theme.DiagPalette
-import kotlin.math.cos
-import kotlin.math.sin
 import androidx.compose.ui.graphics.lerp
 import kotlin.math.PI
-import kotlin.math.atan2
-import kotlin.math.sqrt
 
 private object GaugeColors {
-    val Safe = DiagPalette.AccentBlue          // blue
-    val Warn = DiagPalette.Warn                // orange/yellow (from your palette)
-    val Danger = Color(0xFFFF4D4D)             // red (you can tweak)
-    val Track = DiagPalette.Stroke             // dark track
-    val Pin = Color.White
-    val PinShadow = Color(0x66000000)
+    val Safe = DiagPalette.AccentBlue
+    val Warn = DiagPalette.Warn
+    val Danger = Color(0xFFFF4D4D)
 }
 
 /**
@@ -49,19 +40,17 @@ private fun severityColor(pct: Float): Color {
     }
 }
 
-private fun degToRad(deg: Float): Float = (deg * PI.toFloat() / 180f)
-
-
-
 @Composable
 fun GaugePanel(
     selected: GaugeItem,
+    rpm: Int,
+    temperatureC: Float,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
         when (selected) {
             GaugeItem.RPM -> {
-                val value = 3850
+                val value = rpm.coerceIn(0, 8000)  // from stream
                 val max = 8000
                 DialGauge(
                     title = "RPM",
@@ -74,16 +63,16 @@ fun GaugePanel(
             }
 
             GaugeItem.TEMP -> {
-                val valueC = 92f
+                val valueC = temperatureC
                 val minC = 0f
                 val maxC = 120f
                 DialGauge(
                     title = "ENGINE TEMP",
                     valueText = valueC.toInt().toString(),
                     unitText = "°C",
-                    pct = ((valueC - minC) / (maxC - minC)),
+                    pct = ((valueC - minC) / (maxC - minC)).coerceIn(0f, 1f),
                     dangerWhenHigh = true,
-                    subtitle = "Normal: 80–100°C"
+                    subtitle = "Live from CAN → USB"
                 )
             }
 
@@ -178,10 +167,10 @@ private fun DialGauge(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            // CHANGE 1: push the whole gauge DOWN a bit
+
             .padding(top = 26.dp)
     ) {
-        // CHANGE 2: Box overlay so we can draw TEXT inside the center circle
+
         Box(
             modifier = Modifier.size(400.dp),
             contentAlignment = Alignment.Center
@@ -264,7 +253,7 @@ private fun DialGauge(
             }
         }
 
-        // Below-gauge labels (optional; keep them if you like)
+        // Below-gauge labels
 
         Text(title, color = DiagPalette.TextSecondary, letterSpacing = 2.sp, fontSize = 14.sp)
 
@@ -279,10 +268,3 @@ private fun DialGauge(
         }
     }
 }
-
-
-
-
-// helpers using Float trig (avoid Double conversions everywhere)
-private fun cos(r: Float) = kotlin.math.cos(r)
-private fun sin(r: Float) = kotlin.math.sin(r)
